@@ -1,22 +1,29 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import routers from "./config";
 
-import App from "../App";
-import Home from "../views/Home";
-import Detail from "../views/Detail";
-import List from "../views/List";
-import Container from "../views/ToList";
-import NotFund from "../views/NotFund";
+
+/**
+ * 
+ * @param {router} router 
+ */
+function  generateRouter(router) {
+
+  return router.map(item => item.index
+    ? <Route index element={item.element} /> 
+    : <Route path={item.path} element={item.element}>
+        {
+          item.children.length !== 0 && generateRouter(item.children)
+        }
+      </Route>
+  )
+}
 
 const BaseRouter = () => (
-  <BrowserRouter>
+  <BrowserRouter basename={process.env.PUBLIC_URL}>
     <Routes>
-      <Route path="/" element={<App />}>
-        <Route index element={<Container />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/detail" element={<Detail />} />
-        <Route path="/list/:id" element={<List />} />
-      </Route>
-      <Route path="*" element={<NotFund />}></Route>
+      {
+        generateRouter(routers)
+      }
     </Routes>
   </BrowserRouter>
 );
